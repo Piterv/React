@@ -12,13 +12,10 @@ function App() {
     fetch("/notes")
       .then((res) => res.json())
       .then(data => data.forEach((dataItem) => {
-
         setNotes(prevNotes => {
           return [...prevNotes, dataItem];
         });
-
       })).catch(err => console.log(err));
-
   }, []);
 
   function handleCreate(note) {
@@ -28,7 +25,6 @@ function App() {
   }
 
   function deleteNote(id) {
-
     setNotes(prevNotes => {
       return prevNotes.filter((noteItem) => {
         return noteItem._id !== id;
@@ -36,13 +32,30 @@ function App() {
     });
   }
 
+  function handleEditNote(editedNote) {
+    setNotes(prevNotes => {
+      const newState = prevNotes.map(note => {
+        if (note._id === editedNote.noteId) {
+          return {
+            ...note,
+            title: editedNote.title,
+            content: editedNote.content
+          }
+        }
+        return note;
+      });
+      return newState;
+    });
+  }
+
   return (
-    
+
     <div>
 
       <Header />
 
-      <CreateArea onAdd={handleCreate}/>
+      <CreateArea onAdd={handleCreate} />
+
       {notes.map((noteItem, index) => {
         return (
           <Note
@@ -51,6 +64,7 @@ function App() {
             title={noteItem.title}
             content={noteItem.content}
             onDelete={deleteNote}
+            setOnEdit={handleEditNote}
           />
         );
       })}
@@ -59,7 +73,7 @@ function App() {
 
     </div>
   );
-  
+
 }
 
 export default App;

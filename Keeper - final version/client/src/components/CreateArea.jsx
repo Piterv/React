@@ -3,6 +3,7 @@ import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Zoom from "@mui/material/Zoom";
 
+
 function CreateArea(props) {
   const [isExpanded, setExpanded] = useState(false);
 
@@ -16,8 +17,9 @@ function CreateArea(props) {
     content: true
   })
 
-  // These method updates the state properties.
+  // Thise method updates the state properties.
   function handleChange(event) {
+
     const { name, value } = event.target;
     setNote(prevNote => {
       return {
@@ -60,19 +62,26 @@ function CreateArea(props) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(note)
-      }).then(response => response.json())
-        .catch(err => { console.log(err) });
-
-      setNote({
-        title: "",
-        content: ""
-      });
+      }).then(response => {
+        if (!response.ok) {
+          throw Error(response.statusText);
+        }
+        return response;
+      }).then(response => {
+        console.log("ok");
+        setNote({
+          title: "",
+          content: ""
+        });
+      }).catch(err => { console.log(err) });
 
       // This method fetches the records from the database.
       fetch("/notes")
         .then((res) => res.json())
         .then(data => data[data.length - 1])
         .then(dataItem => props.onAdd(dataItem));
+
+      setExpanded(false);
     }
   }
 
